@@ -5,6 +5,7 @@ import re
 import spotipy
 import statistics
 
+from datetime import datetime
 from spotipy.oauth2 import SpotifyClientCredentials
 
 
@@ -60,8 +61,25 @@ class Spotify:
 
                 mean_match = statistics.mean(total_matches)
 
-                print(mean_match)
-                print(result)
+
+                print('mean_match', mean_match)
+                print('title', result['name'])
+
+                artist_names = []
+
+                for artist in result['artists']:
+                    artist_names.append(artist['name'])
+
+                print('artist', ', '.join(artist_names[:-1]) + ' & ' + artist_names[-1])
+                print('album', result['album']['name'])
+
+                if result['album']['release_date_precision'] == 'year':
+                    release_date_format = '%Y'
+                elif result['album']['release_date_precision'] == 'month':
+                    release_date_format = '%Y-%m'
+                elif result['album']['release_date_precision'] == 'day':
+                    release_date_format = '%Y-%m-%d'
+                release_date = datetime.strptime(result['album']['release_date'], release_date_format)
 
                 if mean_match >= 50:
                     # @todo: return actual Track class
