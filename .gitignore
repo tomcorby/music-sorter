@@ -3,7 +3,7 @@
 .idea/
 
 # database
-music-database.db
+music-sorter.db
 
 # dotenv
 .env

@@ -26,26 +26,40 @@ class SortedMusic(BaseModel):
     date_sorted = DateTimeField(default=datetime.datetime.now)
 
 
-# class Album(BaseModel):
-#     name = TextField()
-# #     tracks
-# #     artists
-#     spotify_uri = TextField()
-#     release_date = DateTimeField()
-#     date_added = DateTimeField(default=datetime.datetime.now)
-#
-#
-# class Artist(BaseModel):
-#     name = TextField()
-# #     albums
-#     spotify_uri = TextField()
-#     date_added = DateTimeField(default=datetime.datetime.now)
-#
-#
-# class Track(BaseModel):
-#     name = TextField()
-# #     artists
-# #     album
-#     spotify_uri = TextField()
-#     date_added = DateTimeField(default=datetime.datetime.now)
-#     genre = TextField()
+class Album(BaseModel):
+    title = TextField()
+    artist = TextField()
+    album = TextField()
+    year = TextField()
+    genre = TextField()
+    compilation = BooleanField()
+    spotify_playlist = TextField()
+#     tracks
+#     artists
+    spotify_uri = TextField()
+    release_date = DateTimeField()
+    date_added = DateTimeField(default=datetime.datetime.now)
+
+
+class Artist(BaseModel):
+    name = TextField()
+#     albums
+    spotify_uri = TextField()
+    date_added = DateTimeField(default=datetime.datetime.now)
+
+
+class Track(BaseModel):
+    title = TextField()
+    artist = TextField()
+    album = TextField()
+    year = TextField()
+    genre = TextField()
+    compilation = BooleanField()
+    spotify_playlist = TextField()
+    play_counter = IntegerField()
+    beats_per_minute = DecimalField()
+#     artists
+#     album
+    genre = TextField()
+    spotify_uri = TextField()
+    date_added = DateTimeField(default=datetime.datetime.now)
