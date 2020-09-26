@@ -13,7 +13,7 @@ def search(artist, track, album):
     results = requests.get('https://api.discogs.com/database/search', params).json()
 
     for i, result in enumerate(results['results']):
-
+        print(result)
 
     return False
 
