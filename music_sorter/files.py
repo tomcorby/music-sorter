@@ -38,7 +38,7 @@ class Files:
 
         return {
             'path': path,
-            'pathParts': path_parts,
+            'path_parts': path_parts,
             'filename': file_name,
             'extension': ext
         }
