@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -22,16 +22,20 @@ def remove_prefix(text, prefix):
         return text[len(prefix):]
     return text
 
+
 def remove_suffix(text, suffix):
     if text.endswith(suffix):
         return text[:-len(suffix):]
     return text
 
+
 def fuzzy_match_strings(a, b):
     return fuzz.ratio(a.lower(), b.lower())
 
+
 def practise_message(message):
     sys.stdout.write('practise: %s\n' % message)
+
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):

@@ -7,12 +7,12 @@ import statistics
 
 from spotipy.oauth2 import SpotifyClientCredentials
 
+
 class Spotify:
     def __init__(self, args):
         self.args = args
         auth_manager = SpotifyClientCredentials()
         self.sp = spotipy.Spotify(auth_manager=auth_manager)
-
 
     def playlist_uris_from_user(self, user):
         playlists = self.sp.user_playlists(user)
@@ -29,67 +29,64 @@ class Spotify:
 
         return uris
 
-
-    def searchTrack(self, track, artist = '', album = ''):
-        if (artist):
+    def search_track(self, track, artist='', album=''):
+        if artist:
             results = self.sp.search(q=artist + ' ' + track, type='track')
         else:
             results = self.sp.search(q=track, type='track')
 
-        if (len(results['tracks']['items'])):
+        if len(results['tracks']['items']):
             for i, result in enumerate(results['tracks']['items']):
-                totalMatches = []
+                total_matches = []
 
-                result['trackMatch'] = common.fuzzy_match_strings(result['name'], track)
-                totalMatches.append(result['trackMatch'])
-                totalMatches.append(common.fuzzy_match_strings(re.sub(r'\([^)]*\)', '', result['name']), track)) # track without features etc
+                result['track_match'] = common.fuzzy_match_strings(result['name'], track)
+                total_matches.append(result['track_match'])
+                # track without features etc
+                total_matches.append(common.fuzzy_match_strings(re.sub(r'\([^)]*\)', '', result['name']), track))
 
-                if (album):
-                    result['album']['albumMatch'] = common.fuzzy_match_strings(result['album']['name'], album)
-                    totalMatches.append(result['album']['albumMatch'])
+                if album:
+                    result['album']['album_match'] = common.fuzzy_match_strings(result['album']['name'], album)
+                    total_matches.append(result['album']['album_match'])
 
-                if (artist):
-                    if (album):
-                        for albumArtist in result['album']['artists']:
-                            albumArtist['albumArtistMatch'] = common.fuzzy_match_strings(albumArtist['name'], artist)
-                            totalMatches.append(albumArtist['albumArtistMatch'])
+                if artist:
+                    if album:
+                        for album_artist in result['album']['artists']:
+                            album_artist['album_artist_match'] = common.fuzzy_match_strings(album_artist['name'], artist)
+                            total_matches.append(album_artist['album_artist_match'])
 
-                    for trackArtist in result['artists']:
-                        trackArtist['trackArtist'] = common.fuzzy_match_strings(trackArtist['name'], artist)
-                        totalMatches.append(trackArtist['trackArtist'])
+                    for track_artist in result['artists']:
+                        track_artist['track_artist'] = common.fuzzy_match_strings(track_artist['name'], artist)
+                        total_matches.append(track_artist['track_artist'])
 
+                mean_match = statistics.mean(total_matches)
 
-                meanMatch = statistics.mean(totalMatches)
-
-                print(meanMatch)
+                print(mean_match)
                 print(result)
 
-                if (meanMatch >= 50):
+                if mean_match >= 50:
                     # @todo: return actual Track class
                     return result
 
         return False
 
-
-    def searchAlbum(self, album, artist = '', tracks = []):
+    def search_album(self, album, artist='', tracks=[]):
         results = self.sp.search(q=album + ' ' + artist, type='album')
 
-        if (len(results['albums']['items'])):
+        if len(results['albums']['items']):
             for result in results['albums']['items']:
-                totalMatches = []
+                total_matches = []
 
-                result['albumMatch'] = common.fuzzy_match_strings(result['name'], album)
-                totalMatches.append(result['albumMatch'])
+                result['album_match'] = common.fuzzy_match_strings(result['name'], album)
+                total_matches.append(result['album_match'])
 
-                if (artist):
-                    for albumArtist in result['artists']:
-                        albumArtist['albumArtistMatch'] = common.fuzzy_match_strings(albumArtist['name'], artist)
-                        totalMatches.append(albumArtist['albumArtistMatch'])
+                if artist:
+                    for album_artist in result['artists']:
+                        album_artist['album_artist_match'] = common.fuzzy_match_strings(album_artist['name'], artist)
+                        total_matches.append(album_artist['album_artist_match'])
 
+                mean_match = statistics.mean(total_matches)
 
-                meanMatch = statistics.mean(totalMatches)
-
-                if (meanMatch >= 50):
+                if mean_match >= 50:
                     # @todo: return actual Album class
                     return album
 
