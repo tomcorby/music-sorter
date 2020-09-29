@@ -1,15 +1,17 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
+import argparse
 import common
 import glob
 import os
 import shutil
 
+from fuzzywuzzy import fuzz
 from pathlib import Path
 from pydub import AudioSegment
 
 
-class Files:
+class Paths:
     def __init__(self, args):
         self.args = args
         self.scanned_paths = []
@@ -25,8 +27,15 @@ class Files:
 
         return paths
 
+    def get_path_minus_read_dir(self, path):
+        return Strings.remove_prefix(path, self.args.read)
+
+    def get_path_minus_write_dir(self, path):
+        return Strings.remove_prefix(path, self.args.write)
+
     # This feels really messy but it does what i need for now
-    def split_path(self, path):
+    @staticmethod
+    def split(path):
         split = os.path.split(path)
         splitext = os.path.splitext(split[-1])
         path_parts = split[0].split(os.path.sep)
@@ -43,31 +52,24 @@ class Files:
             'extension': ext
         }
 
-    def get_extension(self, path_or_filename):
-        return self.split_path(path_or_filename)['extension']
 
-    def get_filename(self, path_or_filename):
-        return self.split_path(path_or_filename)['filename']
-
-    def get_path_minus_read_dir(self, path):
-        return common.remove_prefix(path, self.args.read)
-
-    def get_path_minus_write_dir(self, path):
-        return common.remove_prefix(path, self.args.write)
+class Files:
+    def __init__(self, args):
+        self.args = args
 
     # move or copy or convert or symlink, depending on filetype and args passed in to __main__
     def manage(self, path):
-        unprefixed_path = common.remove_prefix(path, self.args.read)
-        split_path = self.split_path(unprefixed_path)
+        unprefixed_path = Strings.remove_prefix(path, self.args.read)
+        split_path = Paths.split(path)
         new_path = self.args.write + os.path.sep + unprefixed_path
 
         if self.args.practise:
-            print('Creating directory', common.remove_suffix(new_path, split_path['filename'] + split_path['extension']))
+            print('Creating directory', Strings.remove_suffix(new_path, split_path['filename'] + split_path['extension']))
         else:
-            Path(common.remove_suffix(new_path, split_path['filename'] + split_path['extension'])).mkdir(parents=True, exist_ok=True)
+            Path(Strings.remove_suffix(new_path, split_path['filename'] + split_path['extension'])).mkdir(parents=True, exist_ok=True)
 
         if split_path['extension'].lower() == '.wav' and self.args.convert == True and self.args.manage != 'symlink':
-            new_path = common.remove_suffix(new_path, '.wav') + '.flac'
+            new_path = Strings.remove_suffix(new_path, '.wav') + '.flac'
 
             return self.flac_to_wav(existing_path=path, new_path=new_path)
         elif self.args.manage == 'copy':
@@ -122,3 +124,31 @@ class Files:
         # @todo: pass tags in. add either mp3 or flac tags depending on path extension
         return 0
 
+
+class Strings:
+    @staticmethod
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
+
+    @staticmethod
+    def remove_prefix(text, prefix):
+        if text.startswith(prefix):
+            return text[len(prefix):]
+        return text
+
+    @staticmethod
+    def remove_suffix(text, suffix):
+        if text.endswith(suffix):
+            return text[:-len(suffix):]
+        return text
+
+    @staticmethod
+    def fuzzy_match(a, b):
+        return fuzz.ratio(a.lower(), b.lower())

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import common
 import re
@@ -7,6 +7,26 @@ import statistics
 
 from datetime import datetime
 from spotipy.oauth2 import SpotifyClientCredentials
+
+import requests
+# temp
+import dotenv
+import os
+dotenv.load_dotenv()
+
+
+class Discogs:
+    def search(artist, track, album):
+        params = {'token': os.getenv('DISCOGS_TOKEN'), 'artist': artist, 'track': track, 'release_title': album}
+
+        results = requests.get('https://api.discogs.com/database/search', params).json()
+
+        for i, result in enumerate(results['results']):
+            print(result)
+
+        return False
+
+    search('Eminem', 'The Real Slim Shady', '')
 
 
 class Spotify:
@@ -60,7 +80,6 @@ class Spotify:
                         total_matches.append(track_artist['track_artist'])
 
                 mean_match = statistics.mean(total_matches)
-
 
                 print('mean_match', mean_match)
                 print('title', result['name'])

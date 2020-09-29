@@ -1,14 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import click
 import common
 import dotenv
+import models
 import os
 import sys
 
-from database import Database
-from files import Files
-from spotify import Spotify
+from apis import Discogs, Spotify
+from classes import Files, Paths
 
 dotenv.load_dotenv()
 
@@ -38,12 +38,17 @@ elif args.write == os.getenv('SORTED_MUSIC_DIR'):
     if click.confirm('Do you want to export to ' + args.write, default=False) is False:
         sys.exit(1)
 
-db = Database(args=args)
 files = Files(args=args)
-spotify = Spotify(args=args)
+# spotify = Spotify(args=args)
+models.db.connect()
+models.db.create_tables([
+    models.UnsortedMusic, models.AlbumTracks, models.AlbumArtists, models.Album, models.Artist,
+    models.TrackArtists, models.Track
+])
+
+exit()
 
 unsorted_music = files.scan(args.read)
-insert_count = db.insert_unsorted_music(unsorted_music)
 
 # @todo: check if song already exists in sorted music, if so, skip it
 for unsortedSong in unsorted_music:
@@ -52,9 +57,5 @@ for unsortedSong in unsorted_music:
     extension = files.get_extension(new_path)
     search_term = files.get_filename(new_path)
 
-    db.move_unsorted_to_sorted_db(old_path, new_path, extension)
-
-    track = spotify.search_track(search_term)
+    # track = spotify.search_track(search_term)
     # @todo: tag file in new location
-
-db.commit()
