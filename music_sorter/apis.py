@@ -26,8 +26,6 @@ class Discogs:
 
         return False
 
-    search('Eminem', 'The Real Slim Shady', '')
-
 
 class Spotify:
     def __init__(self, args):

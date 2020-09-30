@@ -8,9 +8,10 @@ import os
 import sys
 
 from apis import Discogs, Spotify
-from classes import Files, Paths
+from classes import Files, Paths, Strings
 
 dotenv.load_dotenv()
+
 
 parser = common.MyParser()
 parser.add_argument('--read', type=str, required=False, default=os.getenv('UNSORTED_MUSIC_DIR'),
@@ -18,9 +19,9 @@ parser.add_argument('--read', type=str, required=False, default=os.getenv('UNSOR
 parser.add_argument('--write', type=str, required=False, default=os.getenv('SORTED_MUSIC_DIR'),
                     help='Where to save parsed music to. Overrides SORTED_MUSIC_DIR in .env')
 parser.add_argument('--manage', type=str, required=False, default='copy', help='<move/copy/symlink> default:copy')
-parser.add_argument('--convert', type=common.str2bool, nargs='?', const=True, default=True,
+parser.add_argument('--convert', type=Strings.str2bool, nargs='?', const=True, default=True,
                     help='Convert WAV to FLAC while parsing. Other formats will be handled by the --manage flag')
-parser.add_argument('--practise', type=common.str2bool, nargs='?', const=True, default=True,
+parser.add_argument('--practise', type=Strings.str2bool, nargs='?', const=True, default=True,
                     help='Echo actions instead of doing them')
 args = parser.parse_args()
 
