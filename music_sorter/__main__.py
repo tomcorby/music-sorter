@@ -12,7 +12,6 @@ from classes import Files, Paths, Strings
 
 dotenv.load_dotenv()
 
-
 parser = common.MyParser()
 parser.add_argument('--read', type=str, required=False, default=os.getenv('UNSORTED_MUSIC_DIR'),
                     help='Path to parse. Overrides UNSORTED_MUSIC_DIR in .env')
@@ -40,23 +39,30 @@ elif args.write == os.getenv('SORTED_MUSIC_DIR'):
         sys.exit(1)
 
 files = Files(args=args)
-# spotify = Spotify(args=args)
+paths = Paths(args=args)
+spotify = Spotify(args=args)
+
 models.db.connect()
 models.db.create_tables([
     models.UnsortedMusic, models.AlbumTracks, models.AlbumArtists, models.Album, models.Artist,
     models.TrackArtists, models.Track
 ])
 
-exit()
-
-unsorted_music = files.scan(args.read)
+unsorted_music = paths.scan(args.read)
+print('Unsorted songs', len(unsorted_music))
+# print amount of songs
 
 # @todo: check if song already exists in sorted music, if so, skip it
 for unsortedSong in unsorted_music:
+    #print each song being sorted if verbose
     old_path = unsortedSong[0]
     new_path = files.manage(old_path)
-    extension = files.get_extension(new_path)
-    search_term = files.get_filename(new_path)
+    extension = Paths.split(new_path)['extension']
+    search_term = Paths.split(new_path)['filename']
 
-    # track = spotify.search_track(search_term)
-    # @todo: tag file in new location
+    track = spotify.search_track(search_term)
+
+    print(track)
+    exit()
+
+    files.tag(new_path, track['tags'])

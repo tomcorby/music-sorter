@@ -121,7 +121,24 @@ class Files:
             return new_path
 
     def tag(self, path, tags):
-        # @todo: pass tags in. add either mp3 or flac tags depending on path extension
+        # print('mean_match', mean_match)
+        # print('title', result['name'])
+        #
+        # artist_names = []
+        #
+        # for artist in result['artists']:
+        #     artist_names.append(artist['name'])
+        #
+        # print('artist', ', '.join(artist_names[:-1]) + ' & ' + artist_names[-1])
+        # print('album', result['album']['name'])
+        #
+        # if result['album']['release_date_precision'] == 'year':
+        #     release_date_format = '%Y'
+        # elif result['album']['release_date_precision'] == 'month':
+        #     release_date_format = '%Y-%m'
+        # elif result['album']['release_date_precision'] == 'day':
+        #     release_date_format = '%Y-%m-%d'
+        # release_date = datetime.strptime(result['album']['release_date'], release_date_format)
         return 0
 
 
